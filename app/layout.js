@@ -1,5 +1,14 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { ToastContainer, Bounce } from "react-toastify";
+import {
+  ClerkProvider,
+  SignInButton,
+  SignUpButton,
+  SignedIn,
+  SignedOut,
+  UserButton,
+} from "@clerk/nextjs";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -18,12 +27,36 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        {children}
-      </body>
-    </html>
+    <ClerkProvider>
+      <html lang="en">
+        <head>
+          <script
+            src="https://kit.fontawesome.com/ece4b86e58.js"
+            crossOrigin="anonymous"
+          ></script>
+        </head>
+
+        <body
+          className={`${geistSans.variable} bg-[#1C1C1C] ${geistMono.variable} antialiased`}
+        >
+          <ToastContainer
+            position="top-right"
+            autoClose={2500}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+            theme="light"
+            transition={Bounce}
+          />
+          {/* Same as */}
+          <ToastContainer />
+          {children}
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }

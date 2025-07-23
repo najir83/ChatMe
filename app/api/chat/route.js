@@ -1,13 +1,10 @@
 import { GoogleGenAI } from "@google/genai";
-console.log(process.env.GEMINI_API_KEY);
 const ai = new GoogleGenAI({
   apiKey: process.env.GEMINI_API_KEY,
 });
 
 export async function POST(request) {
   const { chat, history } = await request.json();
-
-  console.log(chat);
 
   const Chat = ai.chats.create({
     model: "gemini-2.5-flash",

@@ -4,6 +4,7 @@
 ChatMe is an intelligent chatbot app that allows users to authenticate via Clerk, chat with Google Gemini via GenAI, and store their conversation history in MongoDB.
 
 ---
+🔗 **Live Demo:** [https://chatme-kappa.vercel.app/]
 
 ## ✨ Features
 

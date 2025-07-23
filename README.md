@@ -1,36 +1,80 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# ChatMe 🤖  
+**Gemini-like AI Chatbot built with Next.js, GenAI, Clerk, Zustand, and MongoDB**
 
-## Getting Started
+ChatMe is an intelligent chatbot app that allows users to authenticate via Clerk, chat with Google Gemini via GenAI, and store their conversation history in MongoDB.
 
-First, run the development server:
+---
+
+## ✨ Features
+
+- 🧠 **Gemini-powered**: Uses Google GenAI (`@google/genai`) to generate smart AI responses.
+- 🔐 **Authentication**: Seamless user sign-up and login using Clerk.
+- 💬 **Chat Interface**: Smooth React-based chat UI.
+- 📦 **State Management**: Global state handled via Zustand.
+- 🗃️ **MongoDB Integration**: Saves chat history persistently.
+- 🌗 **Dark Mode**: Styled with TailwindCSS 4 and theme support.
+- 🔔 **Toast Notifications**: Feedback and errors via `react-toastify`.
+
+---
+
+## 🚀 Tech Stack
+
+| Layer        | Tech                     |
+|--------------|--------------------------|
+| Frontend     | Next.js 15, React 19     |
+| Auth         | Clerk                    |
+| AI Backend   | Google GenAI SDK         |
+| State Mgmt   | Zustand                  |
+| DB           | MongoDB + Mongoose       |
+| Styling      | TailwindCSS 4            |
+| Notifications| React Toastify           |
+
+---
+
+## 📦 Installation
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/your-username/chatme.git
+cd chatme
+pnpm install
+```
+## 🔧 Setup Environment
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+# Clerk Auth
+CLERK_PUBLISHABLE_KEY=your_clerk_publishable_key
+CLERK_SECRET_KEY=your_clerk_secret_key
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=your_clerk_publishable_key
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+# MongoDB
+MONGODB_URI=your_mongo_connection_string
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+# Google GenAI
+GOOGLE_API_KEY=your_genai_api_key
 
-## Learn More
+```
+## 🛠 Available Scripts
+```
+pnpm dev     # Run in development mode
+pnpm build   # Build for production
+pnpm start   # Start production server
+pnpm lint    # Lint the project
 
-To learn more about Next.js, take a look at the following resources:
+```
+## 📁 Project Structure
+```
+/chatme
+  ├── /components       # Reusable React components
+  ├── /lib              # Zustand store, utils, etc.
+  ├── /pages            # Next.js routing
+  ├── /api              # API routes for chat & DB
+  ├── /styles           # Tailwind & global CSS
+  ├── .env.local        # Environment variables
+  └── package.json      # Project config
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```
+## 📸 Preview
+- Home Page 1
+![Chatme UI Screenshot](chatme-home2.png) 
+- Home Page 2
+![Chatme UI Screenshot](chatme-home.png) 

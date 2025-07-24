@@ -13,7 +13,7 @@ export default function Home() {
   const { isSignedIn, user, isLoaded } = useUser();
   const [wid, setWid] = useState(3);
   useEffect(() => {
-    setWid(7);
+    if (isMobile) setWid(7);
   }, [isMobile]);
   const [xbar, setXbar] = useState("arrow-right");
   const {
@@ -188,22 +188,24 @@ export default function Home() {
         </div>
 
         {/* Quota section */}
-       { (!isMobile || (xbar === "arrow-left"))  && <div className="text-gray-400 lg:px-5 lg:py-4 p-1 py-2  text-xs border-t border-gray-600">
-          <div className="flex gap-3 items-center">
-            <i className="fa-solid fa-gauge text-sm"></i>
-            <div className="my-10" hidden={xbar === "arrow-right"}>
-              <p className="text-lg">
-                Chat used: <strong>{useLimit}</strong> / {totLimit}
-              </p>
-              <div className="w-full bg-gray-700 rounded h-2 mt-1">
-                <div
-                  className="bg-blue-400 h-1 rounded"
-                  style={{ width: `${(useLimit / totLimit) * 100}%` }}
-                ></div>
+        {(!isMobile || xbar === "arrow-left") && (
+          <div className="text-gray-400 lg:px-5 lg:py-4 p-1 py-2  text-xs border-t border-gray-600">
+            <div className="flex gap-3 items-center">
+              <i className="fa-solid fa-gauge text-sm"></i>
+              <div className="my-10" hidden={xbar === "arrow-right"}>
+                <p className="text-lg">
+                  Chat used: <strong>{useLimit}</strong> / {totLimit}
+                </p>
+                <div className="w-full bg-gray-700 rounded h-2 mt-1">
+                  <div
+                    className="bg-blue-400 h-1 rounded"
+                    style={{ width: `${(useLimit / totLimit) * 100}%` }}
+                  ></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>}
+        )}
       </div>
 
       <Main />

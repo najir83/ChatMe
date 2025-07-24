@@ -23,6 +23,9 @@ const geistMono = Geist_Mono({
 export const metadata = {
   title: "Chatme - Your personal ai assistant",
   description: "This is Chatme home page to generate assistant",
+  icons: {
+    icon: "/chatme2.png", // or "/favicon.png" if you're using PNG
+  },
 };
 
 export default function RootLayout({ children }) {

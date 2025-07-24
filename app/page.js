@@ -7,9 +7,14 @@ import Link from "next/link";
 import { useState, useEffect, use } from "react";
 import useStore from "@/lib/store";
 import { useUser } from "@clerk/nextjs";
+import useIsMobile from "@/hooks/useIsMobile";
 export default function Home() {
+  const isMobile = useIsMobile();
   const { isSignedIn, user, isLoaded } = useUser();
   const [wid, setWid] = useState(3);
+  useEffect(() => {
+    setWid(7);
+  }, [isMobile]);
   const [xbar, setXbar] = useState("arrow-right");
   const {
     excedLimit,
@@ -94,10 +99,10 @@ export default function Home() {
   const change = () => {
     if (xbar == "arrow-right") {
       setXbar("arrow-left");
-      setWid(17);
+      setWid(isMobile ? 100 : 17);
     } else {
       setXbar("arrow-right");
-      setWid(3);
+      setWid(isMobile ? 7 : 3);
     }
   };
   useEffect(() => {
@@ -106,8 +111,10 @@ export default function Home() {
     };
     Load();
   }, [user]);
+
+  // alert(isMobile)
   return (
-    <div className="flex text-gray-500">
+    <div className="flex  text-gray-500">
       {/* dash-bord  */}
       <div
         onMouseEnter={() => {
@@ -117,14 +124,16 @@ export default function Home() {
           if (xbar == "arrow-left") change();
         }}
         style={{ width: `${wid}%` }}
-        className="transition-all duration-500 min-h-screen flex flex-col justify-between bg-[#222327]"
+        className={`transition-all ${
+          isMobile ? "absolute z-10" : ""
+        }   duration-500 min-h-screen flex flex-col justify-between bg-[#222327]`}
       >
         {/* Top controls */}
         <div>
-          <div className="w-full flex justify-between px-5 py-5">
+          <div className="w-full flex justify-between lg:px-5 px-2 py-4 lg:py-5">
             <button
               onClick={change}
-              className={`fa-solid lg:text-lg cursor-pointer text-gray-500 fa-${xbar}`}
+              className={`fa-solid lg:text-lg text-lg cursor-pointer text-gray-500 fa-${xbar}`}
             ></button>
             <i
               hidden={xbar == "arrow-right"}
@@ -133,10 +142,10 @@ export default function Home() {
           </div>
 
           {/* Action items */}
-          <div className="h-[80vh] px-5 py-2 flex flex-col gap-6 text-gray-300 text-sm">
+          <div className="h-[80vh] lg:px-5  py-2 flex flex-col lg:gap-6 gap-3 text-gray-300 text-sm">
             {/* New Chat */}
             <div
-              className="flex items-center gap-4 cursor-pointer hover:bg-[#2e2f31] p-2 rounded-xl"
+              className="flex items-center gap-4 cursor-pointer hover:bg-[#2e2f31] lg:p-2 p-2 py-2 rounded-xl"
               onClick={handleCreateChat} // Optional logic to reset chat
             >
               <i className="fa-regular text-gray-500 text-lg fa-pen-to-square"></i>
@@ -147,7 +156,7 @@ export default function Home() {
             <div className="  rounded-xl">
               <div
                 onClick={loadHistory}
-                className={`flex items-center gap-4 cursor-pointer px-4 py-2 ${
+                className={`flex items-center gap-4 cursor-pointer lg:px-2 p-2 py-2 ${
                   showHistory ? "bg-[#2e2f31]" : ""
                 }  hover:bg-[#2e2f31]`}
               >
@@ -179,7 +188,7 @@ export default function Home() {
         </div>
 
         {/* Quota section */}
-        <div className="text-gray-400 px-5 py-4 text-xs border-t border-gray-600">
+       { (!isMobile || (xbar === "arrow-left"))  && <div className="text-gray-400 lg:px-5 lg:py-4 p-1 py-2  text-xs border-t border-gray-600">
           <div className="flex gap-3 items-center">
             <i className="fa-solid fa-gauge text-sm"></i>
             <div className="my-10" hidden={xbar === "arrow-right"}>
@@ -194,7 +203,7 @@ export default function Home() {
               </div>
             </div>
           </div>
-        </div>
+        </div>}
       </div>
 
       <Main />

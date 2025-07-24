@@ -4,26 +4,26 @@ import React from "react";
 
 export default function Page() {
   return (
-    <div className="min-h-screen   text-gray-800 dark:text-gray-200 px-6 py-12 w-[70vw] mx-auto">
+    <div className="min-h-screen   text-gray-800 dark:text-gray-200 px-6 py-12 lg:w-[70vw] mx-auto">
       <Link href="/"
-        className={`fa-solid absolute right-88 hover:text-4xl top-7 lg:text-3xl cursor-pointer text-white font-bold fa-arrow-left`}
+        className={`fa-solid absolute top-4  lg:right-88 lg:hover:text-4xl lg:top-7 lg:text-3xl text-xl cursor-pointer text-white font-bold fa-arrow-left`}
       ></Link >
-      <h1 className="text-4xl font-bold mb-6">About ChatMe</h1>
+      <h1 className="lg:text-4xl text-2xl font-bold mb-6">About ChatMe</h1>
 
-      <p className="mb-6 text-lg">
+      <p className="mb-2 lg:mb-6 text-lg">
         <strong>
           Welcome to ChatMe – Your AI-powered Conversation Partner
         </strong>
       </p>
 
-      <p className="mb-6">
+      <p className="lg:mb-6 mb-2">
         ChatMe is an intelligent AI assistant built to help you explore, learn,
         create, and communicate like never before. Whether you're seeking quick
         answers, writing assistance, code explanations, or deep conversations on
         any topic — ChatMe is here for you, 24/7.
       </p>
 
-      <h2 className="text-2xl font-semibold mt-10 mb-4">
+      <h2 className="lg:text-2xl text-xl font-semibold mt-10 mb-4">
         ✨ What ChatMe Can Do:
       </h2>
       <ul className="list-disc list-inside space-y-2">
@@ -49,7 +49,7 @@ export default function Page() {
         </li>
       </ul>
 
-      <h2 className="text-2xl font-semibold mt-10 mb-4">🚀 Why ChatMe?</h2>
+      <h2 className="lg:text-2xl text-xl font-semibold mt-10 mb-4">🚀 Why ChatMe?</h2>
       <p className="mb-6">
         Unlike static tools,{" "}
         <strong>ChatMe is conversational and dynamic</strong> — designed to
@@ -63,7 +63,7 @@ export default function Page() {
         <li>🔐 Privacy-first conversations (your chats stay with you)</li>
       </ul>
 
-      <h2 className="text-2xl font-semibold mt-10 mb-4">
+      <h2 className="lg:text-2xl text-xl font-semibold lg:mt-10 mt-4 mb-4">
         👨‍💻 Built By Developers, For Everyone
       </h2>
       <p className="mb-6">
@@ -73,7 +73,7 @@ export default function Page() {
         mind — ChatMe is designed to be your everyday AI companion.
       </p>
 
-      <h2 className="text-2xl font-semibold mt-10 mb-4">🌐 Get Started</h2>
+      <h2 className="lg:text-2xl text-xl font-semibold mt-10 mb-4">🌐 Get Started</h2>
       <p>
         Start chatting, learning, building, and discovering.{" "}
         <strong>ChatMe is your gateway to the power of AI</strong> — in a way

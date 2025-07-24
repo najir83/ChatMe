@@ -12,6 +12,7 @@ import {
   UserButton,
 } from "@clerk/nextjs";
 import useStore from "@/lib/store";
+import useIsMobile from "@/hooks/useIsMobile";
 
 export default function Main() {
   const [chatMessage, setChatMessage] = useState("");
@@ -100,15 +101,17 @@ export default function Main() {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [history, chatMessage, isResponding]);
 
+  const isMobile = useIsMobile();
+  const [showbtn, setShowbtn] = useState(false);
   return (
     <div className="w-full mx-auto text-gray-300 px-4">
       <div className="h-[8vh] flex justify-between">
         <div className="p-2">
-          <h1 className="lg:text-xl">ChatMe</h1>
+          <h1 className="lg:text-xl px-3 lg:px-0 text-lg">ChatMe</h1>
           <button className="bg-[#222327] px-3 rounded-2xl">2.5 Flash</button>
         </div>
         <div className="p-2 flex gap-3 justify-center items-center">
-          <Link href="/about" className="hover:bg-gray-700 p-2 rounded-2xl">
+          <Link href="/about" className={`hover:bg-gray-700 ${isMobile && "bg-gray-700" } p-2 rounded-2xl lg:rounded-2xl`}>
             About ChatMe
           </Link>
           {/* <Link
@@ -117,39 +120,81 @@ export default function Main() {
           >
             Sign in
           </Link> */}
-          <SignedOut>
-            <SignInButton>
-              <button className="  font-bold px-3 py-1 rounded-2xl  bg-blue-400 hover:bg-blue-600 text-black cursor-pointer">
-                Sign In
-              </button>
-            </SignInButton>
-            <SignUpButton>
-              <button className=" px-3 py-1 rounded-2xl font-bold  bg-blue-400 hover:bg-blue-600 text-black cursor-pointer">
-                Sign Up
-              </button>
-            </SignUpButton>
-          </SignedOut>
+          {!isMobile && (
+            <>
+              {" "}
+              <SignedOut>
+                <SignInButton>
+                  <button className="  font-bold  px-3 py-1 rounded-2xl  bg-blue-400 hover:bg-blue-600 text-black cursor-pointer">
+                    Sign In
+                  </button>
+                </SignInButton>
+                <SignUpButton>
+                  <button className=" px-3 py-1 rounded-2xl font-bold  bg-blue-400 hover:bg-blue-600 text-black cursor-pointer">
+                    Sign Up
+                  </button>
+                </SignUpButton>
+              </SignedOut>
+            </>
+          )}
           <SignedIn>
             <UserButton />
           </SignedIn>
+          {isMobile && (
+            <SignedOut>
+              <button
+                onClick={() => setShowbtn(!showbtn)}
+                className={` p-1 cursor-pointer text-lg transition-all duration-300 ease-in-out transform ${
+                  showbtn
+                    ? "rotate-90 scale-110 text-red-500"
+                    : "rotate-0 scale-100 text-white"
+                } fa-solid fa-${showbtn ? "xmark" : "ellipsis-vertical"}`}
+              ></button>
+            </SignedOut>
+          )}
+
+          {isMobile && (
+            <div
+              className={`absolute transition-all duration-300 ease-in-out right-5 top-14 z-50 ${
+                showbtn
+                  ? "opacity-100 translate-y-0"
+                  : "opacity-0 -translate-y-2 pointer-events-none"
+              }`}
+            >
+              <div className="flex flex-col gap-4 px-6 py-5 rounded-2xl w-48 bg-gradient-to-b from-gray-800 to-gray-900 shadow-lg border border-gray-700">
+                <SignedOut>
+                  <SignInButton>
+                    <button className="font-semibold px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white transition duration-200">
+                      Sign In
+                    </button>
+                  </SignInButton>
+                  <SignUpButton>
+                    <button className="font-semibold px-4 py-2 rounded-xl bg-green-600 hover:bg-green-500 text-white transition duration-200">
+                      Sign Up
+                    </button>
+                  </SignUpButton>
+                </SignedOut>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
       <div className="w-full relative text-center h-[92vh]">
         {history.length === 0 && !isResponding && (
-          <div className="  lg:text-4xl absolute lg:top-70 lg:left-170 text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-violet-500 text-4xl font-bold">
+          <div className=" top-70 left-4  lg:text-4xl absolute lg:top-70 lg:left-170 text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-violet-500 text-3xl font-bold">
             <h1>Meet ChatMe,</h1>
             <h2>your personal AI assistant</h2>
           </div>
         )}
 
-        <div className="w-full ">
-          <div className="lg:h-[78vh] w-[60vw] mx-auto  pb-40 overflow-auto ">
+        <div className="w-full pt-5  ">
+          <div className="lg:h-[76vh] lg:w-[60vw]  h-160 mx-auto   lg:pb-40 overflow-auto ">
             {history.map((e, i) => {
               if (e.role === "user") {
                 return (
-                  <div key={i} className="w-full flex justify-end my-3">
-                    <div className="w-[50%] text-left p-4 rounded-l-4xl rounded-r-2xl bg-[#37393b] text-white lg:text-lg">
+                  <div key={i} className="w-full flex justify-end my-1 lg:my-3">
+                    <div className="lg:w-[50%] w-[70%] p-2 text-left lg:p-4 rounded-l-4xl rounded-r-2xl bg-[#37393b] text-white lg:text-lg">
                       {e.parts[0].text}
                     </div>
                   </div>
@@ -158,7 +203,7 @@ export default function Main() {
                 return (
                   <div
                     key={i}
-                    className="my-6 flex text-white lg:text-lg text-left p-4"
+                    className="lg:my-6 my-3 flex text-white lg:text-lg text-left p-2 lg:p-4"
                   >
                     <i className="fa-solid fa-star mt-1 px-3 text-blue-400"></i>
                     <div>
@@ -172,12 +217,12 @@ export default function Main() {
             {/* Typing bubble */}
             {isResponding && (
               <>
-                <div className="w-full flex justify-end my-3">
-                  <div className="w-[50%] animate-pulse text-left p-4 rounded-l-4xl rounded-r-2xl bg-[#37393b] text-white lg:text-lg">
+                <div className="w-full flex justify-end my-1 lg:my-3">
+                  <div className="lg:w-[50%] w-[70%] animate-pulse p-2 text-left lg:p-4 rounded-l-4xl rounded-r-2xl bg-[#37393b] text-white lg:text-lg">
                     {chat}
                   </div>
                 </div>
-                <div className="my-6 flex text-white lg:text-lg text-left p-4">
+                <div className="lg:my-6 my-3 flex text-white lg:text-lg text-left p-2 lg:p-4">
                   <i className="fa-solid fa-star mt-1 px-3 text-blue-400"></i>
                   <div>
                     <ReactMarkdown>{String(chatMessage || "")}</ReactMarkdown>
@@ -199,35 +244,36 @@ export default function Main() {
           onChange={(e) => {
             setChat(e.target.value);
           }}
-          className="text-gray-400 border-1 w-[40vw] lg:text-lg py-4 lg:px-8 lg:pr-17 rounded-4xl lg:bottom-15 lg:left-125 absolute"
+          className="text-gray-400 border-1 pr-10 lg:w-[40vw] py-3 px-3 bottom-10 left-5 w-90 lg:text-lg lg:py-4 lg:px-8 lg:pr-17 rounded-4xl lg:bottom-15 lg:left-125 absolute"
           placeholder="Enter your thoughts"
         />
 
         <button
           disabled={isResponding}
-         
           onClick={send}
-          className={` text-xl  flex justify-center items-center absolute cursor-pointer text-white  ${
+          className={` text-xl    flex justify-center items-center absolute cursor-pointer text-white  ${
             !isResponding
-              ? "lg:bottom-12 lg:left-299 py-3 lg:px-3 "
-              : "lg:bottom-12 lg:left-299 py-3 lg:px-4"
+              ? "lg:bottom-12 bottom-8 left-82  lg:left-299 lg:py-3 lg:px-3 "
+              : "lg:bottom-12   bottom-9 left-82 lg:left-299 lg:py-3 lg:px-4"
           } rounded-full m-4`}
         >
-        { !isResponding &&(chat.length > 0) && <svg
-            stroke="currentColor"
-            fill="currentColor"
-            stroke-width="0"
-            viewBox="0 0 512 512"
-            class="text-2xl cursor-pointer"
-            height="1.2em"
-            width="1.2em"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path d="M48 448l416-192L48 64v149.333L346 256 48 298.667z"></path>
-          </svg>}
+          {!isResponding && chat.length > 0 && (
+            <svg
+              stroke="currentColor"
+              fill="currentColor"
+              stroke-width="0"
+              viewBox="0 0 512 512"
+              class="text-2xl cursor-pointer"
+              height="1.2em"
+              width="1.2em"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path d="M48 448l416-192L48 64v149.333L346 256 48 298.667z"></path>
+            </svg>
+          )}
           {isResponding && (
             <svg
-              class="w-7 h-7     animate-spin text-blue-50"
+              class="lg:w-7 lg:h-7 w-6 h-6    animate-spin text-blue-50"
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
               viewBox="0 0 24 24"
@@ -248,14 +294,6 @@ export default function Main() {
             </svg>
           )}
         </button>
-
-        {/* <button
-  disabled
-  class="flex items-center gap-2 px-4 py-2 text-white bg-blue-600 rounded-md opacity-80 cursor-not-allowed"
->
-  
-  Preprocessing...
-</button> */}
       </div>
     </div>
   );

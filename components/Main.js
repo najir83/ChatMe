@@ -1,299 +1,381 @@
 "use client";
-import Image from "next/image";
+export const dynamic = "force-dynamic";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
-import {
-  ClerkProvider,
-  SignInButton,
-  SignUpButton,
-  SignedIn,
-  SignedOut,
-  UserButton,
-} from "@clerk/nextjs";
-import useStore from "@/lib/store";
+import { motion } from "framer-motion";
 import useIsMobile from "@/hooks/useIsMobile";
+import useStore from "@/lib/store";
+import { toast, Bounce } from "react-toastify";
+import { SignedIn, UserButton, SignedOut, SignOutButton } from "@clerk/nextjs";
+import { OrbitProgress } from "react-loading-indicators";
+
+import Lottie from "lottie-react";
+import animationData from "@/public/Spinner.json";
+import dott from "@/public/bott.json";
+// OrbitProgress
 
 export default function Main() {
-  const [chatMessage, setChatMessage] = useState("");
-  const [chat, setChat] = useState("");
-  const [isResponding, setIsResponding] = useState(false);
-  const [history, setHistory] = useState([]);
-  const bottomRef = useRef(null);
+  const template = useRef();
 
-  const { excedLimit, totLimit, useLimit, setUseLimit, chat_id } = useStore();
+  const isMobile = useIsMobile();
+  const {
+    history,
+    selectedChat,
+    setHistory,
+    User,
+    Chats,
+    setChats,
+    setSelectedChat,
+    present,
+    setPresent,
+    setUser,
+  } = useStore();
 
   useEffect(() => {
-    const getHistory = async () => {
-      const res = await fetch(`api/generate/${chat_id}`);
-      const data = await res.json();
-      // console.log(data);
-      setHistory(data.history);
-    };
-    if (chat_id) {
-      getHistory();
-    }
-  }, [chat_id]);
+    
+  }, []);
+  const [generating, setGenerating] = useState(false);
+  const [chat, setChat] = useState("");
+  const [messages, setMessages] = useState("");
 
-  const send = async () => {
-    if (useLimit === totLimit) {
-      alert(`Your Message limit is exced`);
+  const sumary = (s) => {
+    let p = "";
+    let c = 0;
+    for (let i = 0; i < Math.min(s.length, 12); i++) {
+      if (s[i] === " ") c++;
+      if (c >= 4) break;
+      p = p + s[i];
+    }
+    return p;
+  };
+  const generate = async () => {
+    if (User?.used_query === User?.query_limit) {
+      toast.warn("You have exced your chat limit !!", { theme: "dark" });
       return;
     }
-    if (history.length == 0) {
-      // alert("calls")
-      const response = await fetch("api/updatechat", {
+    if (generating) return;
+    if (chat.trim().length <= 0) {
+      toast.warn("Enter something !!", { theme: "dark" });
+      return;
+    }
+
+    
+
+    setGenerating(true);
+
+    let chatId;
+
+    if (selectedChat === -1) {
+      const summary = sumary(chat);
+      const res = await fetch("/api/chats", {
         method: "POST",
-        body: JSON.stringify({ chat_id, title: chat }),
         headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ clerk_id: User.clerk_id, title: summary }),
+      });
+      const { chat_id } = await res.json();
+
+      chatId = chat_id; // ✅ store it
+      setChats([...Chats, { _id: chat_id, title: summary }]);
+      setSelectedChat(0);
+    } else {
+      // ✅ use existing one
+      chatId = Chats[Chats.length - 1 - selectedChat]?._id;
+    }
+
+    if (!chatId) {
+      toast.error("Chat ID missing!", { theme: "dark" });
+      setGenerating(false);
+      
+      return;
+    }
+
+    const msg = [...history];
+    if (messages) {
+      msg.push({
+        role: "model",
+        parts: [{ text: messages }],
       });
     }
-    if (isResponding || chat.trim() === "") return;
-    setIsResponding(true);
+    msg.push({ role: "user", parts: [{ text: chat }] });
+    setHistory(msg);
+    setMessages("");
 
-    const response = await fetch("/api/chat", {
-      method: "POST",
-      body: JSON.stringify({ chat, history }),
-      headers: { "Content-Type": "application/json" },
-    });
-
-    const reader = response.body.getReader();
-    const decoder = new TextDecoder("utf-8");
-    let result = "";
-
-    while (true) {
-      const { value, done } = await reader.read();
-      if (done) break;
-      result += decoder.decode(value);
-      setChatMessage(result);
-    }
-
-    setChatMessage("");
-    setHistory([
-      ...history,
-      { role: "user", parts: [{ text: chat }] },
-      { role: "model", parts: [{ text: `${result}` }] },
-    ]);
-    const res = await fetch(`api/generate`, {
+    const Res = await fetch("/api/generate", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        chat_id,
+        chat_id: chatId, // ✅ safe to use
         role: "user",
         parts: [{ text: chat }],
       }),
     });
-    const res2 = await fetch(`api/generate`, {
+
+    if (!Res.ok) {
+      toast.error("Error while updating data !!", { theme: "dark" });
+      setGenerating(false);
+      
+      return;
+    }
+
+    const res = await fetch("/api/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ history: msg }),
+    });
+    const data = await res.json();
+
+    const Res2 = await fetch("/api/generate", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        chat_id,
+        chat_id: chatId, // ✅ again safe
         role: "model",
-        parts: [{ text: `${result}` }],
+        parts: [{ text: data.message }],
       }),
     });
-    setUseLimit(useLimit + 1);
-    setIsResponding(false);
+
+    if (!Res2.ok) {
+      toast.error("Error while updating data !!", { theme: "dark" });
+      setGenerating(false);
+      
+      return;
+    }
+
+    const Res3 = await fetch("/api/update-limit", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        clerk_id: User?.clerk_id,
+      }),
+    });
+    const data2 = await Res3.json();
+    if (!Res3.ok) {
+      toast.error(data?.message || "Error while updating data !!", {
+        theme: "dark",
+      });
+      setGenerating(false);
+      
+      return;
+    } else {
+      setUser(data2.user);
+    }
+    msg.push({
+      role: "model",
+      parts: [{ text: data.message }],
+    });
     setChat("");
+    setHistory(msg);
+    setGenerating(false);
   };
 
+  // 🔥 FIX: scroll when history OR messages update
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [history, chatMessage, isResponding]);
+    template.current?.scrollIntoView({ behavior: "smooth" });
+  }, [history, messages, generating]);
 
-  const isMobile = useIsMobile();
-  const [showbtn, setShowbtn] = useState(false);
+  const inputRef = useRef();
+
   return (
-    <div className="w-full mx-auto text-gray-300 px-4">
-      <div className="h-[8vh] flex justify-between">
-        <div className="p-2">
-          <h1 className="lg:text-xl px-3 lg:px-0 text-lg">ChatMe</h1>
-          <button className="bg-[#222327] px-3 rounded-2xl">2.5 Flash</button>
-        </div>
-        <div className="p-2 flex gap-3 justify-center items-center">
-          <Link href="/about" className={`hover:bg-gray-700 ${isMobile && "bg-gray-700" } p-2 rounded-2xl lg:rounded-2xl`}>
-            About ChatMe
-          </Link>
-          {/* <Link
-            className="bg-blue-400 hover:bg-blue-600 rounded-lg px-6 text-black py-2"
-            href="/"
+    <div className="flex flex-col w-full h-screen bg-gradient-to-b from-gray-900 via-black to-gray-900">
+      {/* Header */}
+      <div className="flex justify-between items-center px-6 py-4 border-b border-gray-800">
+        <motion.div
+          initial={{ opacity: 0, x: -30 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.5 }}
+          className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500"
+        >
+          <Link href="/">Zyra</Link>
+        </motion.div>
+        <div className="flex items-center gap-4">
+          <Link
+            href="/subscription"
+            className="px-5 py-2 rounded-xl font-medium transition border border-yellow-400 text-yellow-300 hover:bg-yellow-400 hover:text-black hover:scale-105 shadow-md"
           >
-            Sign in
-          </Link> */}
-          {!isMobile && (
-            <>
-              {" "}
-              <SignedOut>
-                <SignInButton>
-                  <button className="  font-bold  px-3 py-1 rounded-2xl  bg-blue-400 hover:bg-blue-600 text-black cursor-pointer">
-                    Sign In
-                  </button>
-                </SignInButton>
-                <SignUpButton>
-                  <button className=" px-3 py-1 rounded-2xl font-bold  bg-blue-400 hover:bg-blue-600 text-black cursor-pointer">
-                    Sign Up
-                  </button>
-                </SignUpButton>
-              </SignedOut>
-            </>
-          )}
+            Sub{!isMobile && "scription"}
+          </Link>
           <SignedIn>
             <UserButton />
           </SignedIn>
-          {isMobile && (
-            <SignedOut>
-              <button
-                onClick={() => setShowbtn(!showbtn)}
-                className={` p-1 cursor-pointer text-lg transition-all duration-300 ease-in-out transform ${
-                  showbtn
-                    ? "rotate-90 scale-110 text-red-500"
-                    : "rotate-0 scale-100 text-white"
-                } fa-solid fa-${showbtn ? "xmark" : "ellipsis-vertical"}`}
-              ></button>
-            </SignedOut>
-          )}
-
-          {isMobile && (
-            <div
-              className={`absolute transition-all duration-300 ease-in-out right-5 top-14 z-50 ${
-                showbtn
-                  ? "opacity-100 translate-y-0"
-                  : "opacity-0 -translate-y-2 pointer-events-none"
-              }`}
-            >
-              <div className="flex flex-col gap-4 px-6 py-5 rounded-2xl w-48 bg-gradient-to-b from-gray-800 to-gray-900 shadow-lg border border-gray-700">
-                <SignedOut>
-                  <SignInButton>
-                    <button className="font-semibold px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white transition duration-200">
-                      Sign In
-                    </button>
-                  </SignInButton>
-                  <SignUpButton>
-                    <button className="font-semibold px-4 py-2 rounded-xl bg-green-600 hover:bg-green-500 text-white transition duration-200">
-                      Sign Up
-                    </button>
-                  </SignUpButton>
-                </SignedOut>
-              </div>
-            </div>
-          )}
         </div>
       </div>
 
-      <div className="w-full relative text-center h-[92vh]">
-        {history.length === 0 && !isResponding && (
-          <div className=" top-70 left-4  lg:text-4xl absolute lg:top-70 lg:left-170 text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-violet-500 text-3xl font-bold">
-            <h1>Meet ChatMe,</h1>
-            <h2>your personal AI assistant</h2>
-          </div>
-        )}
+      {/* Chat Area */}
+      <div className="flex-1 flex flex-col overflow-hidden">
+        <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
+          {history.length === 0 && (
+            <>
+              <motion.div
+                initial={{ opacity: 0, y: 40 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 1, ease: "easeOut" }}
+                className="mt-30 text-4xl md:text-5xl font-extrabold text-center bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text text-transparent drop-shadow-lg"
+              >
+                Welcome to <span className="animate-pulse">Zyra</span>
+                <br />
+                <span className="text-2xl md:text-3xl font-semibold">
+                  Your Personal Assistant
+                </span>
+              </motion.div>
+              {/* Dummy Search content */}
+              <div className="flex flex-wrap gap-6 justify-center items-center mt-10">
+                <motion.div
+                  onClick={() => {
+                    setChat("What is the current weather of Kolkata ? ");
+                    inputRef.current.focus();
+                  }}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.97 }}
+                  initial={{ opacity: 0, y: 40 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.15 }}
+                  className={`shadow-lg shadow-gray-800/50 cursor-pointer border border-gray-700 px-4 py-4 w-60 rounded-2xl  text-center text-gray-100`}
+                >
+                  <h2 className="text-lg font-semibold">
+                    🌤️ Current Weather of
+                  </h2>
+                  <p className="mt-1 text-sm opacity-80">Kolkata</p>
+                </motion.div>
+                <motion.div
+                  onClick={() => {
+                    setChat("Tell me some latest news about AI in 2025 . ");
+                    inputRef.current.focus();
+                  }}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.97 }}
+                  initial={{ opacity: 0, y: 40 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.15 }}
+                  className={`shadow-lg shadow-gray-800/50 cursor-pointer border border-gray-700 px-4 py-4 w-60 rounded-2xl  text-center text-gray-100`}
+                >
+                  <h2 className="text-lg font-semibold">📰 Latest News</h2>
+                  <p className="mt-1 text-sm opacity-80">AI in 2025</p>
+                </motion.div>
+                <motion.div
+                  onClick={() => {
+                    setChat("Give me some Sci-Fi movie suggestions . ");
+                    inputRef.current.focus();
+                  }}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.97 }}
+                  initial={{ opacity: 0, y: 40 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.15 }}
+                  className={`shadow-lg shadow-gray-800/50 border border-gray-700 px-4 py-4 w-60 rounded-2xl  text-center text-gray-100`}
+                >
+                  <h2 className="text-lg font-semibold">🎬 Movie Suggestion</h2>
+                  <p className="mt-1 text-sm opacity-80">Sci-Fi</p>
+                </motion.div>
+              </div>
+            </>
+          )}
 
-        <div className="w-full pt-5  ">
-          <div className="lg:h-[76vh] lg:w-[60vw]  h-160 mx-auto   lg:pb-40 overflow-auto ">
-            {history.map((e, i) => {
-              if (e.role === "user") {
-                return (
-                  <div key={i} className="w-full flex justify-end my-1 lg:my-3">
-                    <div className="lg:w-[50%] w-[70%] p-2 text-left lg:p-4 rounded-l-4xl rounded-r-2xl bg-[#37393b] text-white lg:text-lg">
-                      {e.parts[0].text}
-                    </div>
-                  </div>
-                );
-              } else {
-                return (
-                  <div
-                    key={i}
-                    className="lg:my-6 my-3 flex text-white lg:text-lg text-left p-2 lg:p-4"
-                  >
-                    <i className="fa-solid fa-star mt-1 px-3 text-blue-400"></i>
-                    <div>
-                      <ReactMarkdown>{e?.parts?.[0]?.text}</ReactMarkdown>
-                    </div>
-                  </div>
-                );
-              }
-            })}
-
-            {/* Typing bubble */}
-            {isResponding && (
-              <>
-                <div className="w-full flex justify-end my-1 lg:my-3">
-                  <div className="lg:w-[50%] w-[70%] animate-pulse p-2 text-left lg:p-4 rounded-l-4xl rounded-r-2xl bg-[#37393b] text-white lg:text-lg">
-                    {chat}
-                  </div>
+          {history.map((e, i) =>
+            e.role === "user" ? (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, x: 30 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.4 }}
+                className="flex justify-end"
+              >
+                <div className="max-w-[70%] p-4 rounded-l-4xl rounded-tr-4xl bg-gray-800/50 text-white">
+                  {e.parts[0].text}
                 </div>
-                <div className="lg:my-6 my-3 flex text-white lg:text-lg text-left p-2 lg:p-4">
-                  <i className="fa-solid fa-star mt-1 px-3 text-blue-400"></i>
-                  <div>
-                    <ReactMarkdown>{String(chatMessage || "")}</ReactMarkdown>
-                  </div>
+              </motion.div>
+            ) : (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, x: -30 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.4 }}
+                className="flex items-start space-x-3"
+              >
+                <i className="fa-solid fa-star mt-4 text-blue-400"></i>
+                <div className="bg-gray-800/50 rounded-2xl px-4 py-3">
+                  <ReactMarkdown>{e.parts[0].text}</ReactMarkdown>
                 </div>
-              </>
-            )}
+              </motion.div>
+            )
+          )}
 
-            <div ref={bottomRef}></div>
-          </div>
+          {generating && (
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.4 }}
+              className="flex items-start space-x-3"
+            >
+              <i className="fa-solid fa-star mt-4 text-blue-400"></i>
+
+              <div
+                className={`bg-gray-800/50 min-w-[40vw] ${
+                  generating && "animate-pulse"
+                } rounded-2xl px-4 py-3 relative`}
+              >
+                {!messages ? (
+                  <div className="w-full h-5 bg-gray-700 rounded animate-pulse relative overflow-hidden">
+                    <motion.div
+                      className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
+                      animate={{ x: ["-100%", "100%"] }}
+                      transition={{ repeat: Infinity, duration: 1.2 }}
+                    />
+                  </div>
+                ) : (
+                  <ReactMarkdown>{messages}</ReactMarkdown>
+                )}
+              </div>
+            </motion.div>
+          )}
+
+          <div ref={template} className="pb-10" />
         </div>
 
         {/* Input */}
-        <input
-          value={chat}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") send();
-          }}
-          onChange={(e) => {
-            setChat(e.target.value);
-          }}
-          className="text-gray-400 border-1 pr-10 lg:w-[40vw] py-3 px-3 bottom-10 left-5 w-90 lg:text-lg lg:py-4 lg:px-8 lg:pr-17 rounded-4xl lg:bottom-15 lg:left-125 absolute"
-          placeholder="Enter your thoughts"
-        />
-
-        <button
-          disabled={isResponding}
-          onClick={send}
-          className={` text-xl    flex justify-center items-center absolute cursor-pointer text-white  ${
-            !isResponding
-              ? "lg:bottom-12 bottom-8 left-82  lg:left-299 lg:py-3 lg:px-3 "
-              : "lg:bottom-12   bottom-9 left-82 lg:left-299 lg:py-3 lg:px-4"
-          } rounded-full m-4`}
-        >
-          {!isResponding && chat.length > 0 && (
-            <svg
-              stroke="currentColor"
-              fill="currentColor"
-              stroke-width="0"
-              viewBox="0 0 512 512"
-              class="text-2xl cursor-pointer"
-              height="1.2em"
-              width="1.2em"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path d="M48 448l416-192L48 64v149.333L346 256 48 298.667z"></path>
-            </svg>
-          )}
-          {isResponding && (
-            <svg
-              class="lg:w-7 lg:h-7 w-6 h-6    animate-spin text-blue-50"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-            >
-              <circle
-                class="opacity-25"
-                cx="12"
-                cy="12"
-                r="10"
+        <div className="px-6 py-4 border-t border-gray-800 flex items-center gap-3">
+          <input
+            ref={inputRef}
+            value={chat}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                generate();
+              }
+            }}
+            onChange={(e) => {
+              setChat(e.target.value);
+            }}
+            className="flex-1 px-4 py-3 rounded-3xl bg-gray-800/60 text-gray-300 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500"
+            placeholder="Enter your thoughts..."
+          />
+          <button
+            onClick={generate}
+            className="p-3 rounded-full  cursor-pointer bg-purple-500 hover:bg-purple-600 transition"
+          >
+            {!generating ? (
+              <svg
                 stroke="currentColor"
-                stroke-width="4"
-              ></circle>
-              <path
-                class="opacity-75"
                 fill="currentColor"
-                d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
-              ></path>
-            </svg>
-          )}
-        </button>
+                strokeWidth="0"
+                viewBox="0 0 512 512"
+                className="text-white"
+                height="1.3em"
+                width="1.3em"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path d="M48 448l416-192L48 64v149.333L346 256 48 298.667z"></path>
+              </svg>
+            ) : (
+              <div className="w-7 h-7  flex items-center justify-center">
+                <Lottie
+                  animationData={animationData}
+                  loop={true}
+                  className="w-10 h-10"
+                />
+              </div>
+            )}
+          </button>
+        </div>
       </div>
     </div>
   );

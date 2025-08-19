@@ -1,5 +1,5 @@
 import dbConnect from "@/lib/mongodb";
-import Chat from "@/models/Chat";
+import Chat from "@/models/History";
 export async function GET(req, { params }) {
   try {
     await dbConnect();

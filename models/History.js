@@ -31,5 +31,5 @@ const MessageSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-export default mongoose.models.ChatMessage ||
-  mongoose.model("ChatMessage", MessageSchema);
+export default mongoose.models.history ||
+  mongoose.model("history", MessageSchema);

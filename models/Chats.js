@@ -1,8 +1,8 @@
 import mongoose from "mongoose";
 
-const ChatHistorySchema = new mongoose.Schema(
+const ChatsSchema = new mongoose.Schema(
   {
-    auth_id: {
+    clerk_id: {
       type: String,
       required: true,
       index: true,
@@ -15,5 +15,5 @@ const ChatHistorySchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-export default mongoose.models.ChatHistory ||
-  mongoose.model("ChatHistory", ChatHistorySchema);
+export default mongoose.models.Chat ||
+  mongoose.model("Chat", ChatsSchema);

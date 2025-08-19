@@ -1,14 +1,14 @@
 import dbConnect from "@/lib/mongodb";
-import ChatHistory from "@/models/ChatHistory";
+import Chats from "@/models/Chats";
 
 export async function POST(request) {
-  const { auth_id, title } = await request.json();
-  console.log(auth_id, title);
+  const { clerk_id, title } = await request.json();
+  console.log(clerk_id, title);
   try {
     await dbConnect();
 
-    const chat_history = await ChatHistory.create({
-      auth_id,
+    const chat_history = await Chats.create({
+      clerk_id,
       title,
     });
 

@@ -1,5 +1,5 @@
 import dbConnect from "@/lib/mongodb";
-import Chat from "@/models/Chat";
+import History from "@/models/History";
 
 export async function POST(request) {
   const { chat_id, role, parts } = await request.json();
@@ -7,7 +7,7 @@ export async function POST(request) {
   try {
     await dbConnect();
 
-    const chat_history = await Chat.create({
+    const chat_history = await History.create({
       chat_id,
       role,
       parts

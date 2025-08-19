@@ -9,6 +9,8 @@ import {
   SignedOut,
   UserButton,
 } from "@clerk/nextjs";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -29,6 +31,11 @@ export const metadata = {
 };
 
 export default function RootLayout({ children }) {
+
+
+
+
+
   return (
     <ClerkProvider>
       <html lang="en">
@@ -40,7 +47,7 @@ export default function RootLayout({ children }) {
         </head>
 
         <body
-          className={`${geistSans.variable} bg-[#1C1C1C] ${geistMono.variable} antialiased`}
+          className={`${geistSans.variable} bg-gradient-to-br from-gray-900 via-black to-gray-900 text-white ${geistMono.variable} antialiased`}
         >
           <ToastContainer
             position="top-right"
@@ -56,8 +63,11 @@ export default function RootLayout({ children }) {
             transition={Bounce}
           />
           {/* Same as */}
+          <Navbar/>
           <ToastContainer />
+
           {children}
+          <Footer/>
         </body>
       </html>
     </ClerkProvider>

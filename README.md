@@ -1,7 +1,7 @@
 # ChatMe 🤖  
 **Gemini-like AI Chatbot built with Next.js, GenAI, Clerk, Zustand, and MongoDB**
 
-ChatMe is an intelligent chatbot app that allows users to authenticate via Clerk, chat with Google Gemini via GenAI, and store their conversation history in MongoDB.
+ChatMe is an advanced Agentic AI chatbot application that enables users to authenticate securely via Clerk, interact with Google Gemini through GenAI, retrieve real-time information via Google Search (e.g., current weather), and maintain a complete record of their conversation history in MongoDB.
 
 ---
 🔗 **Live Demo:** [https://chatme-kappa.vercel.app/]
@@ -10,6 +10,7 @@ ChatMe is an intelligent chatbot app that allows users to authenticate via Clerk
 
 - 🧠 **Gemini-powered**: Uses Google GenAI (`@google/genai`) to generate smart AI responses.
 - 🔐 **Authentication**: Seamless user sign-up and login using Clerk.
+- ✨ **Google Search and Weather Responce**:  It can search the current data with the help of agentic AI tools and can also fetch current weather of a city
 - 💬 **Chat Interface**: Smooth React-based chat UI.
 - 📦 **State Management**: Global state handled via Zustand.
 - 🗃️ **MongoDB Integration**: Saves chat history persistently.
@@ -76,6 +77,6 @@ pnpm lint    # Lint the project
 ```
 ## 📸 Preview
 - Home Page 1
-![Chatme UI Screenshot](chatme-home2.png) 
+![Chatme UI Screenshot](HomePage.png) 
 - Home Page 2
-![Chatme UI Screenshot](chatme-home.png) 
+![Chatme UI Screenshot](AIResponcePage.png) 

@@ -27,7 +27,7 @@ export default function Features() {
         initial={{ opacity: 0, y: -30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.7 }}
-        className="text-4xl lg:text-6xl font-bold mb-12 text-center"
+        className="text-4xl lg:text-6xl font-bold mb-12 mt-12 lg:mt-0 text-center"
       >
         Powerful <span className="text-blue-400">Features</span>
       </motion.h1>

@@ -48,18 +48,27 @@ async function google_search({ question }) {
 }
 
 async function getWeather({ cityName }) {
-  const url = `https://api.weatherapi.com/v1/current.json?key=${WeatherApiKey}&q=${cityName}&aqi=yes`;
-
   try {
-    const res = await fetch(url);
-    const data = await res.json();
-    return {
-      temperateInDegC: data.current.temp_c,
-      humidity: data.current.humidity,
-      condition: data.current.condition.text,
-    };
+    const geoRes = await fetch(
+      `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(
+        cityName
+      )}`
+    );
+    const geoData = await geoRes.json();
+
+    if (!geoData.results || geoData.results.length === 0) {
+      return { message: "City not found" };
+    }
+
+    const { latitude, longitude, name, country } = geoData.results[0];
+    const weatherRes = await fetch(
+      `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true`
+    );
+    const weatherData = await weatherRes.json();
+
+    return { current_weather: weatherData.current_weather };
   } catch (err) {
-    return { error: "Error fetching weather" };
+    return { error: "Error while fetching weather" };
   }
 }
 
@@ -67,13 +76,14 @@ async function getWeather({ cityName }) {
 const weatherFunctionDescription = {
   name: "getWeather",
   description:
-    "Retrieves the current weather conditions (temperature in Celsius, humidity, and a description) for a specified city.",
+    "Fetches the current weather for a specified city. It first uses a geocoding service to find the city's latitude and longitude, then retrieves the weather data.",
   parameters: {
-    type: "object",
+    type: "OBJECT",
     properties: {
       cityName: {
-        type: "string",
-        description: "The name of the city (e.g., 'London', 'New York').",
+        type: "STRING",
+        description:
+          "The name of the city for which to fetch the weather, e.g., 'Tokyo' or 'San Francisco'.",
       },
     },
     required: ["cityName"],
@@ -135,7 +145,7 @@ export async function POST(request) {
       model: "gemini-2.5-flash",
       contents: History,
       config: {
-       systemInstruction: `You are Zyra, an advanced AI assistant.   
+        systemInstruction: `You are Zyra, an advanced AI assistant.   
 You can directly answer questions using your own knowledge when reasoning, problem-solving, or explanation is required.  
 If the question requires up-to-date or external information (like future ,present,date , news, weather, or facts not in your memory), ALWAYS call the appropriate tool instead of guessing.  
 When the tool provides links, include them clearly in your answer.`,
@@ -166,6 +176,7 @@ When the tool provides links, include them clearly in your answer.`,
     if (functionCalls.length > 0) {
       for (const { functionCall } of functionCalls) {
         const { name, args } = functionCall;
+        // console.log(args);
         const func = tools[name];
         if (!func) continue;
 

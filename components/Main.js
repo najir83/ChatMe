@@ -292,8 +292,9 @@ export default function Main() {
                 transition={{ duration: 0.4 }}
                 className="flex items-start space-x-3"
               >
-                <i className="fa-solid fa-star mt-4 text-blue-400"></i>
-                <div className="bg-gray-800/50 rounded-2xl px-4 py-3">
+                
+                <div className="bg-gray-800/50  relative  rounded-r-4xl shadow-sm shadow-gray-600  px-4 py-3">
+                <i className="fa-brands absolute bg-gradient-to-r from-green-400 to-blue-500 p-[1px] md:p-[2px] left-[-23px] top-1 lg:left-[-25px] text-amber-100 rounded-full fa-edge"></i>
                   <ReactMarkdown>{e.parts[0].text}</ReactMarkdown>
                 </div>
               </motion.div>
@@ -307,13 +308,13 @@ export default function Main() {
               transition={{ duration: 0.4 }}
               className="flex items-start space-x-3"
             >
-              <i className="fa-solid fa-star mt-4 text-blue-400"></i>
 
               <div
                 className={`bg-gray-800/50 min-w-[40vw] ${
                   generating && "animate-pulse"
-                } rounded-2xl px-4 py-3 relative`}
+                } rounded-r-4xl px-4 py-3 shadow-sm shadow-gray-600 relative`}
               >
+                <i className="fa-brands absolute bg-gradient-to-r from-green-400 to-blue-500 p-[1px] md:p-[2px] left-[-23px] top-1 lg:left-[-25px] text-amber-100 rounded-full fa-edge"></i>
                 {!messages ? (
                   <div className="w-full h-5 bg-gray-700 rounded animate-pulse relative overflow-hidden">
                     <motion.div

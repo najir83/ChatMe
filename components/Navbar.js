@@ -170,13 +170,16 @@ export default function Navbar() {
           >
             About
           </Link>
-          <Link
-            href="/login"
-            className="px-5 py-2 rounded-xl font-medium transition bg-gray-800/60 hover:bg-gray-700/70 text-center"
-            onClick={() => setIsOpen(false)}
-          >
-            Login
-          </Link>
+          <SignedOut>
+            <SignInButton className="px-5 py-2 rounded-xl font-medium transition bg-gray-800/60 hover:bg-gray-700/70 hover:scale-105 shadow-sm">
+              Login
+            </SignInButton>
+          </SignedOut>
+          <SignedIn>
+             <SignOutButton className="px-5 py-2 rounded-xl font-medium transition bg-red-950 hover:scale-105 shadow-sm">
+              Logout
+            </SignOutButton>
+          </SignedIn>
         </motion.div>
       )}
     </nav>

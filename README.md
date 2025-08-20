@@ -1,4 +1,4 @@
-# ChatMe 🤖  
+# Zyra 🤖  
 **Gemini-like AI Chatbot built with Next.js, GenAI, Clerk, Zustand, and MongoDB**
 
 ChatMe is an advanced Agentic AI chatbot application that enables users to authenticate securely via Clerk, interact with Google Gemini through GenAI, retrieve real-time information via Google Search (e.g., current weather), and maintain a complete record of their conversation history in MongoDB.

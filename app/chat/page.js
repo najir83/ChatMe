@@ -51,7 +51,7 @@ export default function Home() {
       <OrbitProgress variant="disc" color="#32cd32" size="medium" text="" textColor="" />
     </div>
   ) : (
-    <div className="flex min-h-screen bg-black text-gray-300">
+    <div className="flex min-h-screen   bg-black text-gray-300">
       {/* Sidebar */}
       {isMobile ? <SidebarMob /> : <Sidebar />}
 

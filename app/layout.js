@@ -1,4 +1,4 @@
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono,Poppins, Roboto } from "next/font/google";
 import "./globals.css";
 import { ToastContainer, Bounce } from "react-toastify";
 import {
@@ -15,6 +15,17 @@ import Footer from "@/components/Footer";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
+});
+const poppins = Poppins({
+  subsets: ["latin"],
+  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
+  variable: "--font-poppins", // optional for CSS variable
+});
+
+const roboto = Roboto({
+  subsets: ["latin"],
+  weight: ["100", "300", "400", "500", "700", "900"],
+  variable: "--font-roboto",
 });
 
 const geistMono = Geist_Mono({
@@ -44,10 +55,11 @@ export default function RootLayout({ children }) {
             src="https://kit.fontawesome.com/ece4b86e58.js"
             crossOrigin="anonymous"
           ></script>
+          
         </head>
 
         <body
-          className={`${geistSans.variable} bg-gradient-to-br from-gray-900 via-black to-gray-900 text-white ${geistMono.variable} antialiased`}
+          className={`${poppins.variable} ${roboto.variable} bg-gradient-to-br from-gray-900 via-black to-gray-900 text-white  antialiased`}
         >
           <ToastContainer
             position="top-right"

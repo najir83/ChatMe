@@ -1,18 +1,50 @@
 import { GoogleGenAI } from "@google/genai";
-
+import { getJson } from "serpapi";
 const WeatherApiKey = process.env.WEATHER_API_KEY;
-
-
-
-
-
-
 
 // --------------------------------------- Tools ---------------------------------------
 
-
 function sum({ num1, num2 }) {
   return num1 + num2;
+}
+
+async function google_search({ question }) {
+  try {
+    return await new Promise((resolve, reject) => {
+      getJson(
+        {
+          engine: "google",
+          q: question,
+          google_domain: "google.com",
+          hl: "en",
+          gl: "us",
+          api_key: process.env.Search_API,
+        },
+        (json) => {
+          if (!json || !json["organic_results"]) {
+            reject("No results");
+            return;
+          }
+          const answer = [];
+          for (
+            let i = 0;
+            i < Math.min(json["organic_results"].length, 3);
+            i++
+          ) {
+            answer.push({
+              title: json["organic_results"][i].title,
+              link: json["organic_results"][i].link,
+              snippet: json["organic_results"][i].snippet,
+            });
+          }
+          resolve(answer);
+        }
+      );
+    });
+  } catch (e) {
+    console.error(e);
+    return [{ title: "Error", snippet: "Error while fetching data." }];
+  }
 }
 
 async function getWeather({ cityName }) {
@@ -61,21 +93,32 @@ const sumFunDeclaration = {
   },
 };
 
+const SearchFunctionDescription = {
+  name: "google_search",
+  description:
+    "Searches Google for a given query and returns the top 3 most relevant results. Each result includes the title, a brief snippet, and the link to the source. This tool is useful for answering questions that require up-to-date or specific information from the web.",
+  parameters: {
+    type: "object",
+    properties: {
+      question: {
+        type: "string",
+        description:
+          "The search query to be used for the Google search. This should be a concise and specific question or phrase.",
+      },
+    },
+    required: ["question"],
+  },
+};
 
 //------------------------------------------------------------------------------------------
-
 
 // --- AI Config ---
 const ai = new GoogleGenAI({
   apiKey: process.env.GEMINI_API_KEY,
 });
 
-
-
-
-
 export async function POST(request) {
-  const tools = { sum, getWeather };
+  const tools = { sum, getWeather, google_search: google_search };
   let cnt = 0;
   const { history } = await request.json();
   const History = history;
@@ -92,13 +135,16 @@ export async function POST(request) {
       model: "gemini-2.5-flash",
       contents: History,
       config: {
-        systemInstruction:
-          "Your name is Zyra , You are an Advance AI chat bot with some tools available to you , so for every user question if tools available then answer them from the tools other wise answer from your current knowledge if you can  ",
+       systemInstruction: `You are Zyra, an advanced AI assistant.   
+You can directly answer questions using your own knowledge when reasoning, problem-solving, or explanation is required.  
+If the question requires up-to-date or external information (like future ,present,date , news, weather, or facts not in your memory), ALWAYS call the appropriate tool instead of guessing.  
+When the tool provides links, include them clearly in your answer.`,
         tools: [
           {
             functionDeclarations: [
               sumFunDeclaration,
               weatherFunctionDescription,
+              SearchFunctionDescription,
             ],
           },
         ],
@@ -138,7 +184,7 @@ export async function POST(request) {
     // --- Handle text output ---
     if (textParts.length > 0) {
       const answer = textParts.map((p) => p.text).join("\n");
-      console.log("Model:", answer);
+      // console.log("Model:", answer);
       return Response.json({ message: answer }, { status: 200 });
     }
   }

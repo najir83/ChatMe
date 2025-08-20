@@ -44,6 +44,9 @@ importers:
       react-toastify:
         specifier: ^11.0.5
         version: 11.0.5(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      serpapi:
+        specifier: ^2.2.1
+        version: 2.2.1
       zustand:
         specifier: ^5.0.6
         version: 5.0.6(@types/react@19.1.8)(react@19.1.0)(use-sync-external-store@1.5.0(react@19.1.0))
@@ -2055,6 +2058,9 @@ packages:
     resolution: {integrity: sha512-RF0Fw+rO5AMf9MAyaRXI4AV0Ulj5lMHqVxxdSgiVbixSCXoEmmX/jk0CuJw4+3SqroYO9VoUh+HcuJivvtJemA==}
     engines: {node: '>=10'}
     hasBin: true
+
+  serpapi@2.2.1:
+    resolution: {integrity: sha512-1HXXaIwDmYueFPauAggIkzozMi5P/a4/yRUxB8Z1kad0VQE/7ohf9a6xRQ99aXR252itDChfmJUfBdCA4phCYA==}
 
   server-only@0.0.1:
     resolution: {integrity: sha512-qepMx2JxAa5jjfzxG79yPPq+8BuFToHd1hm7kI+Z4zAq1ftQiP7HcxMhDDItrbtwVeLg/cY2JnKnrcFkmiswNA==}
@@ -4655,6 +4661,8 @@ snapshots:
   semver@6.3.1: {}
 
   semver@7.7.2: {}
+
+  serpapi@2.2.1: {}
 
   server-only@0.0.1: {}
 

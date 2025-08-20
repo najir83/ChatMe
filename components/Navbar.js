@@ -101,12 +101,14 @@ export default function Navbar() {
 
         {/* Right Side (Desktop) */}
         <div className="hidden md:flex items-center gap-4">
-          <Link
-            href="/subscription"
-            className="px-5 py-2 rounded-xl font-medium transition border border-yellow-400 text-yellow-300 hover:bg-yellow-400 hover:text-black hover:scale-105 shadow-md"
-          >
-            Subscription
-          </Link>
+          {User?.role === "user" && (
+            <Link
+              href="/subscription"
+              className="px-5 py-2 rounded-xl font-medium transition border border-yellow-400 text-yellow-300 hover:bg-yellow-400 hover:text-black hover:scale-105 shadow-md"
+            >
+              Subscription
+            </Link>
+          )}
           <SignedOut>
             <SignInButton className="px-5 py-2 rounded-xl font-medium transition bg-gray-800/60 hover:bg-gray-700/70 hover:scale-105 shadow-sm">
               Login
@@ -119,12 +121,14 @@ export default function Navbar() {
 
         {/* Mobile Right Side - Subscription always visible */}
         <div className="md:hidden flex items-center gap-2">
-          <Link
-            href="/subscription"
-            className="px-4 py-2 rounded-lg font-medium transition border border-yellow-400 text-yellow-300 hover:bg-yellow-400 hover:text-black shadow-md"
-          >
-            Sub
-          </Link>
+          {User?.role === "user" && (
+            <Link
+              href="/subscription"
+              className="px-4 py-2 rounded-lg font-medium transition border border-yellow-400 text-yellow-300 hover:bg-yellow-400 hover:text-black shadow-md"
+            >
+              Sub
+            </Link>
+          )}
           <button
             onClick={() => setIsOpen(!isOpen)}
             className="focus:outline-none text-white"
@@ -176,7 +180,7 @@ export default function Navbar() {
             </SignInButton>
           </SignedOut>
           <SignedIn>
-             <SignOutButton className="px-5 py-2 rounded-xl font-medium transition bg-red-950 hover:scale-105 shadow-sm">
+            <SignOutButton className="px-5 py-2 rounded-xl font-medium transition bg-red-950 hover:scale-105 shadow-sm">
               Logout
             </SignOutButton>
           </SignedIn>

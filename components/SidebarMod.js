@@ -155,7 +155,7 @@ export default function SidebarMob() {
       {/* Mobile Toggle Button */}
       {!isOpen && (
         <button
-          className="fixed top-4 left-97 z-50 md:hidden p-2 rounded-lg text-gray-300 hover:text-purple-400"
+          className="fixed top-3 left-103 z-50 md:hidden p-2 rounded-lg text-gray-300 hover:text-purple-400"
           onClick={() => setIsOpen(!isOpen)}
         >
           <EllipsisVertical size={24} />

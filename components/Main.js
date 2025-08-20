@@ -189,12 +189,12 @@ export default function Main() {
           <Link href="/">Zyra</Link>
         </motion.div>
         <div className="flex items-center gap-4">
-          <Link
+        {User?.role==='user' &&  <Link
             href="/subscription"
             className="px-5 py-2 rounded-xl font-medium transition border border-yellow-400 text-yellow-300 hover:bg-yellow-400 hover:text-black hover:scale-105 shadow-md"
           >
             Sub{!isMobile && "scription"}
-          </Link>
+          </Link>}
           <SignedIn>
             <UserButton />
           </SignedIn>

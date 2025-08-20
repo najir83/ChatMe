@@ -11,7 +11,7 @@ export async function POST(request) {
       return Response.json({ message: "user not found" }, { status: 404 });
     }
     user.role = "premium";
-    user.query_limit = 22;
+    user.query_limit = 15;
     user.used_query = 0;
     user.save();
 

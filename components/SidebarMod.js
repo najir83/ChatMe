@@ -72,6 +72,7 @@ export default function SidebarMob() {
                 setHistory([]);
                 setSelectedChat(-1);
                 setPresent(false);
+                setIsOpen(false);
               }}
               className="flex items-center gap-4 cursor-pointer hover:bg-gray-800/60 p-2 rounded-xl transition"
             >
@@ -91,7 +92,10 @@ export default function SidebarMob() {
                   .reverse()
                   .map((e, i) => (
                     <div
-                      onClick={() => handleSelectedChat(Chats.length - 1 - i)}
+                      onClick={() => {
+                        setIsOpen(false);
+                        handleSelectedChat(Chats.length - 1 - i);
+                      }}
                       key={i}
                       className={`py-1 hover:bg-gray-700/60 px-3 flex my-1 w-full h-10 whitespace-nowrap overflow-hidden cursor-pointer rounded-xl transition ${
                         selectedChat === i && "text-green-400 bg-gray-700/60"
@@ -155,7 +159,7 @@ export default function SidebarMob() {
       {/* Mobile Toggle Button */}
       {!isOpen && (
         <button
-          className="fixed top-3 left-103 z-50 md:hidden p-2 rounded-lg text-gray-300 hover:text-purple-400"
+          className="fixed top-4 left-98 z-50 md:hidden p-2 rounded-lg text-gray-300 hover:text-purple-400"
           onClick={() => setIsOpen(!isOpen)}
         >
           <EllipsisVertical size={24} />

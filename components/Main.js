@@ -177,7 +177,7 @@ export default function Main() {
   const inputRef = useRef();
 
   return (
-    <div className="flex flex-col w-full h-screen bg-gradient-to-b from-gray-900 via-black to-gray-900">
+    <div className="flex flex-col w-full max-w-[100vw] h-screen bg-gradient-to-b from-gray-900 via-black to-gray-900">
       {/* Header */}
       <div className="flex justify-between items-center px-6 py-4 border-b border-gray-800">
         <motion.div
@@ -203,7 +203,7 @@ export default function Main() {
 
       {/* Chat Area */}
       <div className="flex-1 flex flex-col overflow-hidden">
-        <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
+        <div className="flex-1 overflow-y-auto px-6    py-4 space-y-4">
           {history.length === 0 && (
             <>
               <motion.div
@@ -233,7 +233,7 @@ export default function Main() {
                   className={`shadow-lg shadow-gray-800/50 cursor-pointer border border-gray-700 px-4 py-4 w-60 rounded-2xl  text-center text-gray-100`}
                 >
                   <h2 className="text-lg font-semibold">
-                    🌤️ Current Weather of
+                    🌤️ Current Weather in
                   </h2>
                   <p className="mt-1 text-sm opacity-80">Kolkata</p>
                 </motion.div>
@@ -280,7 +280,7 @@ export default function Main() {
                 transition={{ duration: 0.4 }}
                 className="flex justify-end"
               >
-                <div className="max-w-[70%] p-4 rounded-l-4xl rounded-tr-4xl bg-gray-800/50 text-white">
+                <div className="max-w-[70%] p-4 rounded-l-4xl text-sm lg:text-lg rounded-tr-4xl bg-gray-800/50 text-white">
                   {e.parts[0].text}
                 </div>
               </motion.div>
@@ -290,11 +290,11 @@ export default function Main() {
                 initial={{ opacity: 0, x: -30 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.4 }}
-                className="flex items-start space-x-3"
+                className="flex relative items-start space-x-3"
               >
                 
-                <div className="bg-gray-800/50  relative  rounded-r-4xl shadow-sm shadow-gray-600  px-4 py-3">
-                <i className="fa-brands absolute bg-gradient-to-r from-green-400 to-blue-500 p-[1px] md:p-[2px] left-[-23px] top-1 lg:left-[-25px] text-amber-100 rounded-full fa-edge"></i>
+                <i className="fa-brands  absolute bg-gradient-to-r from-green-400 to-blue-500 p-[1px] md:p-[2px] left-[-23px] top-0 lg:left-[-23px] text-amber-100 rounded-full fa-edge"></i>
+                <div className="bg-gray-800/50  max-w-[97vw] lg:max-w-[93vw] text-sm lg:text-lg overflow-x-scroll  relative  rounded-r-4xl shadow-sm shadow-gray-600  px-4 py-3">
                   <ReactMarkdown>{e.parts[0].text}</ReactMarkdown>
                 </div>
               </motion.div>

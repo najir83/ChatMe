@@ -80,7 +80,9 @@ export default function Navbar() {
           transition={{ duration: 0.5 }}
           className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500"
         >
+          <Link href='/'>
           Zyra
+          </Link>
         </motion.div>
 
         {/* Middle Menu (Desktop Only) */}

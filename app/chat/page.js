@@ -6,6 +6,9 @@ import useIsMobile from "@/hooks/useIsMobile";
 import SidebarMob from "@/components/SidebarMod";
 import useStore from "@/lib/store";
 import { OrbitProgress } from "react-loading-indicators";
+
+
+
 export default function Home() {
   const [isClient, setIsClient] = useState(false);
 

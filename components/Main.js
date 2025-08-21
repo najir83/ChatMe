@@ -294,7 +294,7 @@ export default function Main() {
               >
                 
                 <i className="fa-brands  absolute bg-gradient-to-r from-green-400 to-blue-500 p-[1px] md:p-[2px] left-[-23px] top-0 lg:left-[-23px] text-amber-100 rounded-full fa-edge"></i>
-                <div className="bg-gray-800/50  max-w-[97vw] lg:max-w-[93vw] text-sm lg:text-lg overflow-x-scroll  relative  rounded-r-4xl shadow-sm shadow-gray-600  px-4 py-3">
+                <div className="bg-gray-800/50  max-w-[97vw] lg:max-w-[93vw] text-sm lg:text-lg overflow-x-auto  relative  rounded-r-4xl shadow-sm shadow-gray-600  px-4 py-3">
                   <ReactMarkdown>{e.parts[0].text}</ReactMarkdown>
                 </div>
               </motion.div>
